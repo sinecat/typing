@@ -1,0 +1,18 @@
+.text-board{
+    position: relative;
+    padding: 20px;
+    display: flex;
+    width: 1024px;
+}
+
+.caret{
+    position: absolute;
+    display: block;
+    width: 3px;
+    height: 30px;
+    @apply bg-black;
+    left: 0;
+    top: 0;
+    transform: translateY(-10%);
+    transition: .5s;
+}
