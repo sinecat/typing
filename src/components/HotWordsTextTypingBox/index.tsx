@@ -9,25 +9,27 @@ import {Button} from "@/components/ui/button";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {Terminal} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
+import {useToast} from "@/components/ui/use-toast";
+import './styles.css'
 
-const wordNumsConfig = [3,20, 30, 40, 50]
+const wordNumsConfig = [3, 20, 30, 40, 50]
 
 const HotWordsTextTypingBox = () => {
+    const {toast} = useToast()
     const [targetValue, setTargetValue] = useState<any>()
     const [inputValue, setInputValue] = useState('')
     const [successTextLength, setSuccessTextLength] = useState(0)
     const [isFinished, setIsFinished] = useState(false)
     const [isFocus, setIsFocus] = useState(false)
-    const [inputing, setInputing] = useState(false)
+    const [inputting, setInputting] = useState(false)
     const [wordNums, setWordNums] = useState(wordNumsConfig[0])
     const inputRef = useRef<HTMLInputElement>(null)
 
     const {time, start, pause, reset, end} = useTimer();
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value.replace('\n', '')
-        const forbiddenPattern = /[\u4e00-\u9fa5\uff01-\uff5e\r\n]/g;
-        if (value.length > targetValue?.strLength || value.length < successTextLength||forbiddenPattern.test(value)) return
-        if (inputing) {
+        let value = event.target.value.replace('\n', '')
+        if (value.length > targetValue?.strLength || value.length < successTextLength) return
+        if (inputting) {
             setInputValue(value)
         }
     }
@@ -36,11 +38,15 @@ const HotWordsTextTypingBox = () => {
         if (inputRef.current) {
             inputRef.current.focus();
             setIsFocus(true)
+            toast({
+                title: "TIP",
+                description: "Please switch to English input method",
+            })
         }
     }
 
-    const handleWordNumsClick = (num:number) => {
-        if(wordNums!==num){
+    const handleWordNumsClick = (num: number) => {
+        if (wordNums !== num) {
             setWordNums(num)
             setTargetValue(getRandomData(textData, num))
             setInputFocus()
@@ -62,14 +68,14 @@ const HotWordsTextTypingBox = () => {
 
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter' && isFocus) {
-            setInputing(true)
+            setInputting(true)
             start()
         }
     }
 
     const handleBlur = () => {
         pause()
-        setInputing(false)
+        setInputting(false)
         setIsFocus(false)
     }
 
@@ -92,7 +98,10 @@ const HotWordsTextTypingBox = () => {
         const inputValueArr = inputValue.split(' ')
         const targetValueArr = targetValue?.data?.map((item: TextDataType) => item.value)
         inputValueArr.forEach((item, index) => {
-            if (item === targetValueArr?.[index]?.trim()) {
+            const startIndex = inputValue.indexOf(targetValueArr?.[index])
+            const endIndex = startIndex + targetValueArr?.[index]?.length
+            const currentStrValue = inputValue.substring(startIndex, endIndex)
+            if (currentStrValue && currentStrValue === targetValueArr?.[index]) {
                 result += targetValueArr[index].length
             }
         })
@@ -111,14 +120,16 @@ const HotWordsTextTypingBox = () => {
                     {
                         wordNumsConfig?.map((item, index) => {
                             return (
-                                <>
-                                    <div key={index} className={`${wordNums === item ? 'text-primary' : ''}`}
+                                <div key={'word-num-box' + item}>
+                                    <div key={'word-num' + item}
+                                         className={`${wordNums === item ? 'text-primary' : ''}`}
                                          onClick={() => handleWordNumsClick(item)}
                                     >
                                         {item}
                                     </div>
-                                    {index===wordNumsConfig.length-1?null:<Separator orientation="vertical"/>}
-                                </>
+                                    {index === wordNumsConfig.length - 1 ? null :
+                                        <Separator key={'Separator-word-num' + item} orientation="vertical"/>}
+                                </div>
                             )
                         })
                     }
@@ -132,11 +143,12 @@ const HotWordsTextTypingBox = () => {
                        ref={inputRef}
                        onBlur={handleBlur} onKeyDown={handleKeyDown}/>
                 <Button className='w-30' onClick={handleFreshClick}>Refresh</Button>
-                {isFocus && !inputing ? <Alert className='w-80 mt-20 animate-bounce text-lg'>
+                {isFocus && !inputting ? <Alert className='w-80 mt-20 animate-bounce text-lg'>
                     <Terminal className="h-4 w-5"/>
                     <AlertTitle>Ready?</AlertTitle>
                     <AlertDescription className='mt-2 text-lg'>
-                        Press <Badge className='bg-gray-100 text-black rounded text-lg font-light'>Enter</Badge> to start typing
+                        Press <Badge className='bg-gray-100 text-black rounded text-lg font-light'>Enter</Badge> to
+                        start typing
                     </AlertDescription>
                 </Alert> : null}
             </div>
