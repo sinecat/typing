@@ -8,7 +8,7 @@ import HotWordsTextTypingBox from "@/components/HotWordsTextTypingBox";
 const Page = () => {
 
     return (
-            <div className='w-full flex p-10 items-center justify-center'>
+            <div className='w-full flex p-5 items-center justify-center'>
                 <Tabs defaultValue="chinese" className="w-full items-start">
                     <TabsList>
                         <TabsTrigger value="chinese">Chinese Hot Words</TabsTrigger>
