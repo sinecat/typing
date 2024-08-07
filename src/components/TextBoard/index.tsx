@@ -62,7 +62,7 @@ const TextBoard = (props: TextBoardProps) => {
         }, [targetValue])
 
         return (
-            <div className='m-20'>
+            <div className='w-[1024px]'>
                 <div className='text-board flex flex-wrap gap-4' ref={textBoardRef} onClick={onClick}>
                     {focus ?
                         <div className='caret animate-opacity'
@@ -82,7 +82,7 @@ const TextBoard = (props: TextBoardProps) => {
                                 currentTextColor = inputText ? 'danger' : 'no-input';
                             }
                             return (
-                                <div key={index} className='word flex flex-col gap-1 text-xl text-center font-medium'>
+                                <div key={index} className='word flex flex-col gap-1 text-xl text-center'>
                                     <div className={`label ${currentTextColor}`}>{value.text}</div>
                                     <div className='letters flex gap-0.5'>
                                         {
